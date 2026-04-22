@@ -8,7 +8,7 @@ status: Draft
 type: Standards Track
 category: ERC
 created: 2026-03-03
-requires: 20, 165, 721, 1155, 3643
+requires: 165
 ---
 
 ## Abstract
@@ -83,13 +83,14 @@ interface IERCXXXXNonFungibleTransferContext {
 - `data` SHOULD carry any calldata payload associated with the transfer (e.g. [ERC-1155](./eip-1155.md) `data` or [ERC-777](./eip-777.md) `data`). If no data is available, `data` SHOULD be empty.
 - `from` MUST be `address(0)` when minting, and `to` MUST be `address(0)` when burning, if those flows are integrated into the same hook.
 
-### [ERC-165](./eip-165.md) Support (Optional)
+### [ERC-165](./eip-165.md) Support
 
-Hook contracts MAY implement [ERC-165](./eip-165.md) to allow tokens to detect supported interfaces before calling the hook.
+Hook contracts implementing this ERC MUST implement [ERC-165](./eip-165.md) so tokens can detect supported interfaces before calling the hook.
 
-- A hook contract that supports the fungible interface SHOULD return `true` for `supportsInterface(type(IERCXXXXFungibleTransferContext).interfaceId)`.
-- A hook contract that supports the multi-token interface SHOULD return `true` for `supportsInterface(type(IERCXXXXNonFungibleTransferContext).interfaceId)`.
-- Tokens MAY call `supportsInterface(...)` before invoking `transferred(...)` to verify compatibility. If the hook contract does not implement ERC-165 or returns `false`, the token SHOULD treat the hook as not supporting the interface and handle accordingly.
+- A hook contract that supports the fungible interface MUST return `true` for `supportsInterface(type(IERCXXXXFungibleTransferContext).interfaceId)`.
+- A hook contract that supports the multi-token interface MUST return `true` for `supportsInterface(type(IERCXXXXNonFungibleTransferContext).interfaceId)`.
+- Hook contracts MUST return `false` for `supportsInterface(0xffffffff)`.
+- Tokens MAY call `supportsInterface(...)` before invoking `transferred(...)` to verify compatibility. If `supportsInterface(...)` returns `false`, the token SHOULD treat the hook as not supporting the interface and handle accordingly.
 
 ### Hook Requirements
 
