@@ -2,18 +2,18 @@
 eip: 1404
 title: Transfer Restriction Interface Extension
 description: A transfer-restriction interface with machine-readable codes for fungible and non-fungible tokens.
-author: CMTA, Ryan Sauge (@rya-sge)
+author: Ryan Sauge (@rya-sge)
 discussions-to: https://ethereum-magicians.org/t/erc-1404-extended-transfer-restriction-interface/0
 status: Draft
 type: Standards Track
 category: ERC
 created: 2026-04-22
-requires: 20, 165, 721, 1155
+requires: 165
 ---
 
 ## Abstract
 
-This EIP defines an extension of [ERC-1404](./eip-1404.md) for exposing transfer restriction logic across [ERC-20](./eip-20.md), [ERC-721](./eip-721.md), and [ERC-1155](./eip-1155.md) tokens. It enables clients to pre-check transfer eligibility and retrieve machine-readable restriction codes alongside human-readable messages. The interface supports optional spender-aware restriction detection and supports [ERC-165](./eip-165.md) discovery.
+This EIP defines an extension of [ERC-1404](./erc-1404.md) for exposing transfer restriction logic across [ERC-20](./erc-20.md), [ERC-721](./erc-721.md), and [ERC-1155](./erc-1155.md) tokens. It enables clients to pre-check transfer eligibility and retrieve machine-readable restriction codes alongside human-readable messages. The interface supports optional spender-aware restriction detection and requires [ERC-165](./erc-165.md) discovery.
 
 ## Motivation
 
@@ -21,7 +21,7 @@ Tokens across major standards may be subject to transfer restrictions due to reg
 
 When restrictions are enforced only by reverts, wallets and off-chain systems have no standardized machine-readable reason for failure. This causes poor UX and inconsistent integration behavior.
 
-Related standards such as [ERC-7943](./eip-7943.md) and [ERC-7551](./eip-7551.md) define transfer eligibility checks, but typically rely on boolean outcomes. This EIP extends the original [ERC-1404](./eip-1404.md) code-and-message approach to newer token models and spender/operator transfer flows.
+Related standards such as [ERC-7943](./erc-7943.md) and [ERC-7551](./erc-7551.md) define transfer eligibility checks, but typically rely on boolean outcomes. This EIP extends the original [ERC-1404](./erc-1404.md) code-and-message approach to newer token models and spender/operator transfer flows.
 
 ## Specification
 
@@ -31,6 +31,7 @@ Related standards such as [ERC-7943](./eip-7943.md) and [ERC-7551](./eip-7551.md
 - Restriction code `0` MUST indicate an unrestricted transfer.
 - Non-zero restriction codes are implementation-defined.
 - Spender-aware detection is OPTIONAL.
+- [ERC-165](./erc-165.md) support is REQUIRED.
 
 ### Interfaces
 
@@ -84,9 +85,9 @@ interface IERC1404NFTSpender {
 
 ### ERC-165
 
-Implementations MAY support [ERC-165](./eip-165.md) discovery for any interface above.
+Implementations MUST support [ERC-165](./erc-165.md) discovery for any interface above.
 
-If [ERC-165](./eip-165.md) is implemented, `supportsInterface(bytes4)` SHOULD return `true` for each implemented ERC-1404 extended interface.
+`supportsInterface(bytes4)` MUST return `true` for each implemented ERC-1404 extended interface.
 
 ### Transfer Semantics
 
@@ -112,7 +113,7 @@ This design keeps restriction logic machine-readable and wallet-friendly:
 
 ## Backwards Compatibility
 
-The standard is additive for [ERC-20](./eip-20.md), [ERC-721](./eip-721.md), and [ERC-1155](./eip-1155.md).
+The standard is additive for [ERC-20](./erc-20.md), [ERC-721](./erc-721.md), and [ERC-1155](./erc-1155.md).
 
 Existing integrations remain compatible with base token behavior. Integrators that detect this extension can run pre-flight restriction checks and display restriction messages.
 
@@ -123,7 +124,7 @@ Existing integrations remain compatible with base token behavior. Integrators th
 3. `messageForTransferRestriction(code)` returns deterministic output for each used non-zero code.
 4. Actual transfer execution enforces the same policy as detection logic.
 5. If spender-aware interfaces are implemented, delegated/operator transfer paths use the spender-aware restriction check.
-6. If [ERC-165](./eip-165.md) is implemented, `supportsInterface` reports implemented interfaces correctly.
+6. `supportsInterface` reports implemented interfaces correctly for all implemented ERC-1404 extended interfaces.
 
 ## Reference Implementation
 
